@@ -95,6 +95,7 @@ fun DiaryAppTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
         darkTheme -> LightColors
         else -> DarkColors
     }
