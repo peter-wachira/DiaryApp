@@ -24,26 +24,36 @@ import com.example.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
 import io.realm.kotlin.mongodb.App
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun SetupNavGraph(startDestination: String, navController: NavHostController) {
     NavHost(startDestination = startDestination, navController = navController) {
-        authenticationRoute()
+        authenticationRoute(
+            navigateToHome = {
+                navController.popBackStack()
+                navController.navigate(Screen.Home.route)
+            }
+        )
         homeRoute()
         writeRoute()
     }
 }
 
-fun NavGraphBuilder.authenticationRoute() {
+fun NavGraphBuilder.authenticationRoute(
+    navigateToHome: () -> Unit
+) {
     composable(route = Screen.Authentication.route) {
         val viewModel: AuthenticationViewModel = viewModel()
+        val authenticated by viewModel.authenticated
         val loadingState by viewModel.loadingState
         val oneTapState = rememberOneTapSignInState()
         val messageBarState = rememberMessageBarState()
         AuthenticationScreen(
-            loadingState = oneTapState.opened,
+            authenticated = authenticated,
+            loadingState = loadingState,
             oneTapState = oneTapState,
             messageBarState = messageBarState,
             onButtonClicked = {
@@ -57,15 +67,19 @@ fun NavGraphBuilder.authenticationRoute() {
                         if (it) {
                             messageBarState.addSuccess("Successfully Authenticated!")
                         }
+                        viewModel.setLoading(false)
                     },
                     onError = {
                         messageBarState.addError(it)
+                        viewModel.setLoading(false)
                     }
                 )
             },
             onDialogDismissed = { message ->
                 messageBarState.addError(Exception(message))
-            }
+            },
+            navigateToHome = navigateToHome
+
         )
     }
 }
@@ -78,15 +92,13 @@ fun NavGraphBuilder.homeRoute() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Button(onClick = {
-                scope.launch {
+                scope.launch(Dispatchers.IO) {
                     App.create(APP_ID).currentUser?.logOut()
                 }
             }) {
-                Text(text = "logout")
+                Text(text = "Logout")
             }
-
         }
     }
 }
