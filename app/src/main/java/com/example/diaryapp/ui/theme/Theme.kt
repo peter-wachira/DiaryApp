@@ -96,8 +96,8 @@ fun DiaryAppTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> LightColors
-        else -> DarkColors
+        darkTheme -> DarkColors
+        else -> LightColors
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -118,7 +118,6 @@ fun DiaryAppTheme(
         }
 
         val windowsInsetsController = WindowCompat.getInsetsController(window, view)
-
         windowsInsetsController.isAppearanceLightStatusBars = !darkTheme
         windowsInsetsController.isAppearanceLightNavigationBars = !darkTheme
     }
