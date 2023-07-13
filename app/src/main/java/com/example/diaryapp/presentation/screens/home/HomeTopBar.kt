@@ -18,7 +18,7 @@ fun HomeTopBar(
     onMenuClicked: () -> Unit
 ) {
     TopAppBar(navigationIcon = {
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick =  onMenuClicked ) {
             Icon(
                 imageVector = Icons.Default.Menu,
                 contentDescription = "Hamburger Menu Icon",
